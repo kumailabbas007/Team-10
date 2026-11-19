@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080d18">
+<title>TEAM | Trading Assistant</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#080d18;color:#f1f5f9;
+ font-family:Arial,sans-serif;padding:20px;
+}
+.container{max-width:600px;margin:auto}
+header{text-align:center;padding:25px 0}
+.logo{font-size:34px;font-weight:900;letter-spacing:5px;color:#38bdf8}
+.subtitle{color:#94a3b8;font-size:12px;letter-spacing:2px}
+.card{
+ background:#111c2e;border:1px solid #24344c;
+ border-radius:15px;padding:18px;margin:15px 0;
+}
+h2{font-size:17px;margin:0 0 15px}
+.status{color:#fbbf24;font-weight:bold}
+.small{font-size:12px;color:#94a3b8;line-height:1.6}
+input,select{
+ width:100%;padding:13px;margin:7px 0 15px;
+ border-radius:8px;border:1px solid #334155;
+ background:#080d18;color:white;font-size:15px;
+}
+label{font-size:13px;color:#cbd5e1}
+button{
+ width:100%;padding:14px;border:0;border-radius:9px;
+ background:#0284c7;color:white;font-weight:bold;
+ font-size:15px;cursor:pointer;
+}
+button.secondary{background:#334155;margin-top:9px}
+.result{font-size:14px;line-height:2;color:#7dd3fc}
+.footer{text-align:center;color:#64748b;font-size:11px;padding:25px}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+ <div class="logo">TEAM</div>
+ <div class="subtitle">TRADING ASSISTANT v1.0</div>
+ <p class="small">Trade smart. Protect your capital.</p>
+</header>
+
+<div class="card">
+ <h2>System Status</h2>
+ <p>Platform: <b>Exness / MT5</b></p>
+ <p>Trading Pair: <b>XAUUSD (GOLD)</b></p>
+ <p>Strategy: <b>50 EMA Trend Pullback</b></p>
+ <p>Account Mode: <b>Cent Account</b></p>
+ <p>MT5 Connection: <span class="status">Not Connected</span></p>
+ <p class="small">This dashboard does not currently receive live market data or MT5 alerts.</p>
+</div>
+
+<div class="card">
+ <h2>Capital Protection</h2>
+
+ <label>Account balance (USD)</label>
+ <input id="balance" type="number" value="10" min="0">
+
+ <label>Risk per trade (%)</label>
+ <select id="risk">
+  <option value="1">1%</option>
+  <option value="2" selected>2%</option>
+  <option value="3">3%</option>
+ </select>
+
+ <button onclick="calculateRisk()">Calculate Risk</button>
+ <div class="result" id="riskResult">
+  Your risk calculation will appear here.
+ </div>
+</div>
+
+<div class="card">
+ <h2>Trade Planner</h2>
+
+ <label>Trade Direction</label>
+ <select id="direction">
+  <option>BUY</option>
+  <option>SELL</option>
+ </select>
+
+ <label>Entry Price</label>
+ <input id="entry" type="number" step="any" placeholder="Enter price">
+
+ <label>Stop Loss</label>
+ <input id="sl" type="number" step="any" placeholder="Enter stop loss">
+
+ <label>Take Profit</label>
+ <input id="tp" type="number" step="any" placeholder="Enter take profit">
+
+ <button onclick="calculateTrade()">Calculate Trade</button>
+
+ <div class="result" id="tradeResult">
+  Your trade analysis will appear here.
+ </div>
+</div>
+
+<div class="card">
+ <h2>Trading Rules</h2>
+ <p class="small">
+ ✓ Follow the 50 EMA trend.<br>
+ ✓ Wait for a valid pullback.<br>
+ ✓ Confirm the setup before entry.<br>
+ ✓ Always define Stop Loss.<br>
+ ✓ Never risk more than your planned amount.<br>
+ ✓ Avoid emotional trading.
+ </p>
+</div>
+
+<div class="card">
+ <h2>Important Notice</h2>
+ <p class="small">
+ TEAM is currently a manual trading dashboard.
+ No live signals, automatic orders or broker connection
+ are enabled. Calculations are educational estimates,
+ not financial advice.
+ </p>
+</div>
+
+<div class="footer">
+ TEAM TRADING ASSISTANT<br>
+ Version 1.0 | Built for disciplined trading
+</div>
+
+</div>
+
+<script>
+function calculateRisk(){
+ const balance=Number(document.getElementById("balance").value);
+ const risk=Number(document.getElementById("risk").value);
+
+ if(!Number.isFinite(balance)||balance<=0){
+  document.getElementById("riskResult").textContent="Enter a valid balance.";
+  return;
+ }
+
+ const amount=balance*risk/100;
+
+ document.getElementById("riskResult").innerHTML=
+ "Account Balance: $"+balance.toFixed(2)+
+ "<br>Risk Percentage: "+risk+"%"+
+ "<br>Maximum Planned Risk: $"+amount.toFixed(2);
+}
+
+function calculateTrade(){
+ const entry=Number(document.getElementById("entry").value);
+ const sl=Number(document.getElementById("sl").value);
+ const tp=Number(document.getElementById("tp").value);
+ const direction=document.getElementById("direction").value;
+
+ const output=document.getElementById("tradeResult");
+
+ if(!Number.isFinite(entry)||!Number.isFinite(sl)||
+ !Number.isFinite(tp)||entry<=0||sl<=0||tp<=0){
+  output.textContent="Please enter all three valid prices.";
+  return;
+ }
+
+ const valid=direction==="BUY"
+ ? sl<entry && tp>entry
+ : sl>entry && tp<entry;
+
+ if(!valid){
+  output.textContent="Invalid price arrangement for "+direction+". Check your Entry, SL and TP.";
+  return;
+ }
+
+ const risk=Math.abs(entry-sl);
+ const reward=Math.abs(tp-entry);
+ const ratio=reward/risk;
+
+ output.innerHTML=
+ "Direction: "+direction+
+ "<br>Entry: "+entry+
+ "<br>Stop Loss: "+sl+
+ "<br>Take Profit: "+tp+
+ "<br>Price Risk: "+risk.toFixed(3)+
+ "<br>Potential Reward: "+reward.toFixed(3)+
+ "<br>Risk/Reward Ratio: 1:"+ratio.toFixed(2);
+}
+</script>
+
+</body>
+</html>
