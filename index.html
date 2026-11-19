@@ -159,6 +159,32 @@ button.secondary{background:#334155;margin-top:9px}
  </p>
 </div>
 
+<div class="card">
+  <h2>🔔 TEAM ALERT CENTER</h2>
+
+  <p class="small">
+    Manage your Android trading notifications.
+  </p>
+
+  <p id="notificationStatus" class="status">
+    Notifications: Not enabled
+  </p>
+
+  <button onclick="enableTeamNotifications()">
+    ENABLE NOTIFICATIONS
+  </button>
+
+  <button class="secondary" onclick="sendTestAlert()">
+    SEND TEST NOTIFICATION
+  </button>
+
+  <div class="small" style="margin-top:15px">
+    Signal type: XAUUSD BUY / SELL<br>
+    Delivery: Android Chrome<br>
+    Live strategy connection: Not connected yet
+  </div>
+</div>
+
 <div class="footer">
  TEAM TRADING ASSISTANT<br>
  Version 1.0 | Built for disciplined trading
@@ -220,6 +246,44 @@ function calculateTrade(){
  "<br>Potential Reward: "+reward.toFixed(3)+
  "<br>Risk/Reward Ratio: 1:"+ratio.toFixed(2);
 }
+
+async function enableTeamNotifications() {
+  const status = document.getElementById("notificationStatus");
+
+  if (!("Notification" in window)) {
+    status.textContent = "Notifications are not supported.";
+    return;
+  }
+
+  try {
+    const permission = await Notification.requestPermission();
+
+    if (permission === "granted") {
+      status.textContent = "Notifications: ENABLED";
+      new Notification("TEAM ALERT CENTER", {
+        body: "Your Android notifications are now enabled!"
+      });
+    } else {
+      status.textContent = "Notifications: Permission denied";
+    }
+  } catch (error) {
+    status.textContent = "Unable to enable notifications.";
+  }
+}
+
+function sendTestAlert() {
+  if (!("Notification" in window) ||
+      Notification.permission !== "granted") {
+    alert("Please enable notifications first.");
+    return;
+  }
+
+  new Notification("TEAM GOLD ALERT", {
+    body: "This is a test notification. XAUUSD alert system is ready for integration.",
+    tag: "team-test-alert"
+  });
+}
+ 
 </script>
 
 </body>
